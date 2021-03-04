@@ -1,0 +1,104 @@
+#!/bin/bash
+# Manual zsysctl gc
+clear
+garbagespace=
+kernelscount=
+kernelstrim=
+
+check () {
+        garbagespace=$(zpool list | awk -F '[% ]+' '/bpool/ {print $8}')
+        kernelscount=$(zsysctl show --full | grep -c -C 2 Kernel)
+        clear
+        echo "Your BPOOL is $garbagespace% full."
+        echo "You have $kernelscount Kernel Snapshots"
+        echo ""
+}
+
+empty () {
+        garbagespace=$(zpool list | awk -F '[% ]+' '/bpool/ {print $8}')
+        kernelscount=$(zsysctl show --full | grep -c -C 2 Kernel)
+        if [[ $garbagespace -gt 50 ]]
+        then
+        echo "How many snapshots would you like to trim?"
+        echo "0 - $kernelscount"
+                        while :; do
+                        read kernelstrim
+                        [[ $kernelstrim =~ ^[0-9]+$ ]] || { echo "Enter a valid number!"; continue; }
+                        if ((kernelstrim >= 0 && kernelstrim <= kernelscount)); then
+                        break
+                        else
+                        echo "Number out of range, try again!"
+                        fi
+                        done
+                if [[ $kernelstrim -gt 0 ]]
+                then
+                clear
+                echo ""
+                echo "Collecting Garbage"
+                echo ""
+                zsysctl show --full | grep -C 2 -m $kernelstrim Kernel
+                echo ""
+                echo "Done."
+                echo ""
+                elif [[ $kernelstrim = 0 ]]
+                then
+                clear
+                echo ""
+                echo "Cancelled" >&2
+                echo ""
+                fi
+        else
+        clear
+        echo "Garbage Not Full"
+        echo "Do you still want to trim snapshots?"
+        read trimanswer
+                if [[ $trimanswer = yes ]] || [[ $trimanswer = y ]]
+                then
+                clear
+                echo "How many snapshots would you like to trim?"
+                echo "0 - $kernelscount"
+                                while :; do
+                                read kernelstrim
+                                [[ $kernelstrim =~ ^[0-9]+$ ]] || { echo "Enter a valid number!"; continue; }
+                                if ((kernelstrim >= 0 && kernelstrim <= kernelscount)); then
+                                break
+                                else
+                                echo "Number out of range, try again!"
+                                fi
+                                done
+                        if [[ $kernelstrim -gt 0 ]]
+                        then
+                        clear
+                        echo ""
+                        echo "Collecting Garbage"
+                        echo ""
+                        zsysctl show --full | grep -C 2 -m $kernelstrim Kernel
+                        echo ""
+                        echo "Done."
+                        echo ""
+                        elif [[ $kernelstrim = 0 ]]
+                        then
+                        clear
+                        echo ""
+                        echo "Cancelled"
+                        echo ""
+                        fi
+                fi
+        fi
+}
+
+while true; do
+        options=("Check Garbage" "Empty Garbage" "Quit")
+
+        echo "Choose an option: "
+        select opt in "${options[@]}"; do
+                case $REPLY in
+                        1) check; break ;;
+                        2) empty; break ;;
+                        3) break 2 ;;
+                        *) echo "Invalid Option!" >&2
+                esac
+        done
+done
+
+echo "Have a nice day!"

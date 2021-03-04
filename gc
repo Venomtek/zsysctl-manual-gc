@@ -36,7 +36,7 @@ empty () {
                 echo ""
                 echo "Collecting Garbage"
                 echo ""
-                zsysctl show --full | grep -C 2 Kernel | grep bpool | tac | grep bpool -m $kernelstrim | awk -F '[_ ]+' '/bpool/ {print $5}'| xargs -n1 zsysctl state remove  --dry-run -s
+                zsysctl show --full | grep -C 2 Kernel | grep bpool | tac | grep bpool -m $kernelstrim | awk -F '[_ ]+' '/bpool/ {print $5}'| xargs -n1 zsysctl state remove -s
                 echo ""
                 echo "Done."
                 echo ""
@@ -72,7 +72,7 @@ empty () {
                         echo ""
                         echo "Collecting Garbage"
                         echo ""
-                        zsysctl show --full | grep -C 2 Kernel | grep bpool | tac | grep bpool -m $kernelstrim | awk -F '[_ ]+' '/bpool/ {print $5}'| xargs -n1 zsysctl state remove  --dry-run -s
+                        zsysctl show --full | grep -C 2 Kernel | grep bpool | tac | grep bpool -m $kernelstrim | awk -F '[_ ]+' '/bpool/ {print $5}'| xargs -n1 zsysctl state remove -s
                         echo ""
                         echo "Done."
                         echo ""

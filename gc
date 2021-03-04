@@ -49,7 +49,7 @@ empty () {
                 fi
         else
         clear
-        echo "Garbage Not Full"
+        echo "BPOOL is less than 50% full"
         echo "Do you still want to trim snapshots?"
         read trimanswer
                 if [[ $trimanswer = yes ]] || [[ $trimanswer = y ]]
